@@ -56,6 +56,7 @@ class KotlinGradleMobileMultiplatformModuleBuilder :
         val androidMain = src.createKotlinSampleFileWriter(mainSourceName, jvmTargetName, languageName = "java")
         val androidTest = src.createKotlinSampleFileWriter(mainTestName, languageName = "java", fileName = "SampleTestsAndroid.kt")
 
+        val appInfo = appDir.createChildData(this, "Info.plist").bufferedWriter()
         val androidLocalProperties = rootDir.createChildData(this, "local.properties").bufferedWriter()
         val androidRoot = src.findChild(mainSourceName)!!
         val androidManifest = androidRoot.createChildData(this, "AndroidManifest.xml").bufferedWriter()
@@ -189,6 +190,33 @@ class KotlinGradleMobileMultiplatformModuleBuilder :
             """.trimIndent()
             )
 
+            appInfo.write(
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "https://www.apple.com/DTDs/PropertyList-1.0.dtd">
+                <plist version="1.0">
+                <dict>
+                    <key>CFBundleDevelopmentRegion</key>
+                    <string>${'$'}(DEVELOPMENT_LANGUAGE)</string>
+                    <key>CFBundleExecutable</key>
+                    <string>${'$'}(EXECUTABLE_NAME)</string>
+                    <key>CFBundleIdentifier</key>
+                    <string>${'$'}(PRODUCT_BUNDLE_IDENTIFIER)</string>
+                    <key>CFBundleInfoDictionaryVersion</key>
+                    <string>6.0</string>
+                    <key>CFBundleName</key>
+                    <string>${'$'}(PRODUCT_NAME)</string>
+                    <key>CFBundlePackageType</key>
+                    <string>BNDL</string>
+                    <key>CFBundleShortVersionString</key>
+                    <string>1.0</string>
+                    <key>CFBundleVersion</key>
+                    <string>1</string>
+                </dict>
+                </plist>
+                """.trimIndent()
+            )
+
             androidLocalProperties.write(
                 """
 ## This file must *NOT* be checked into Version Control Systems,
@@ -271,7 +299,7 @@ sdk.dir=PleaseSpecifyAndroidSdkPathHere
             )
         } finally {
             listOf(
-                commonMain, commonTest, androidMain, androidTest, nativeMain, nativeTest,
+                commonMain, commonTest, androidMain, androidTest, nativeMain, nativeTest, appInfo,
                 androidLocalProperties, androidManifest, androidStrings, androidStyles, androidActivityMain
             ).forEach(BufferedWriter::close)
         }
