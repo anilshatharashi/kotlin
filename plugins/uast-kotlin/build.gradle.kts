@@ -61,4 +61,6 @@ testsJar {}
 
 projectTest {
     workingDir = rootDir
+    //TODO: support parallelization
+    //maxParallelForks = Math.max(Runtime.getRuntime().availableProcessors() / 2, 1)
 }

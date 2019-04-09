@@ -72,6 +72,8 @@ testsJar()
 projectTest {
     workingDir = rootDir
     useAndroidSdk()
+    //TODO: support parallelizarion
+    //maxParallelForks = Math.max(Runtime.getRuntime().availableProcessors() / 2, 1)
 }
 
 configureFormInstrumentation()

@@ -48,6 +48,7 @@ testsJar {}
 projectTest {
     workingDir = rootDir
     dependsOn(":dist")
+    maxParallelForks = Math.max(Runtime.getRuntime().availableProcessors() / 2, 1)
 }
 
 publish()

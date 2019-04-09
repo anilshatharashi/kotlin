@@ -38,4 +38,5 @@ dist(targetName = the<BasePluginConvention>().archivesBaseName.removePrefix("kot
 
 projectTest {
     workingDir = rootDir
+    maxParallelForks = Math.max(Runtime.getRuntime().availableProcessors() / 2, 1)
 }

@@ -23,3 +23,7 @@ sourceSets {
 }
 
 runtimeJar()
+
+tasks.withType<Test> {
+    maxParallelForks = Math.max(Runtime.getRuntime().availableProcessors() / 2, 1)
+}

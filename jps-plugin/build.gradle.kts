@@ -63,6 +63,7 @@ projectTest {
     // because it forces Intellij reindexing after each compiler change
     dependsOn(":kotlin-compiler:dist")
     workingDir = rootDir
+    maxParallelForks = Math.max(Runtime.getRuntime().availableProcessors() / 2, 1)
 }
 
 testsJar {}

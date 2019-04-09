@@ -44,6 +44,7 @@ dependencies {
 
 projectTest {
     workingDir = rootDir
+    maxParallelForks = Math.max(Runtime.getRuntime().availableProcessors() / 2, 1)
 }
 
 val generateTests by generator("org.jetbrains.kotlin.generators.tests.GenerateTestsKt")

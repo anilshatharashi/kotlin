@@ -79,6 +79,7 @@ projectTest {
     workingDir = rootDir
     useAndroidSdk()
     useAndroidJar()
+    maxParallelForks = Math.max(Runtime.getRuntime().availableProcessors() / 2, 1)
 }
 
 runtimeJar()

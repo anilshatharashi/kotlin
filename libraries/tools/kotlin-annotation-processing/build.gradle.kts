@@ -18,6 +18,7 @@ dependencies {
 
 projectTest {
     workingDir = projectDir
+    maxParallelForks = Math.max(Runtime.getRuntime().availableProcessors() / 2, 1)
 }
 
 publish()
