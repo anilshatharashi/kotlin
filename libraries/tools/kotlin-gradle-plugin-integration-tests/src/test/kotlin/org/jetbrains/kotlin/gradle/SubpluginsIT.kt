@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.gradle
 
+import org.gradle.util.GradleVersion
 import org.jetbrains.kotlin.gradle.util.checkBytecodeContains
 import org.jetbrains.kotlin.gradle.util.modify
 import org.junit.Test
@@ -144,25 +145,40 @@ class SubpluginsIT : BaseGradleIT() {
         val worldGreet = project.projectFile("world.greet")
         val greetScriptTemplateKt = project.projectFile("GreetScriptTemplate.kt")
 
+        var isFailed = false
         project.build("build", options = options) {
-            assertSuccessful()
             val classesDir = kotlinClassesDir("app", "main")
-            assertFileExists("${classesDir}World.class")
-            assertFileExists("${classesDir}Alice.class")
-            assertFileExists("${classesDir}Bob.class")
+            if (!fileInWorkingDir("${classesDir}World.class").exists()) {
+                assertSuccessful()
+                assertFileExists("${classesDir}World.class")
+                assertFileExists("${classesDir}Alice.class")
+                assertFileExists("${classesDir}Bob.class")
 
-            if (withIC) {
-                // compile iterations are not logged when IC is disabled
-                assertCompiledKotlinSources(project.relativize(bobGreet, aliceGreet, worldGreet, greetScriptTemplateKt))
+                if (withIC) {
+                    // compile iterations are not logged when IC is disabled
+                    assertCompiledKotlinSources(project.relativize(bobGreet, aliceGreet, worldGreet, greetScriptTemplateKt))
+                }
+            } else {
+                assertFailed()
+                val usedGradleVersion =
+                    GradleVersion.version(
+                        System.getProperty("kotlin.gradle.version.for.tests")
+                            ?: project.gradleVersionRequirement.minVersion
+                    )
+                assertTrue(usedGradleVersion.version.substringBefore(',').toIntOrNull()?.let { it < 5 } == true)
+                assertContains("kotlin scripting plugin: unsupported gradle version")
+                isFailed = true
             }
         }
 
-        bobGreet.modify { it.replace("Bob", "Uncle Bob") }
-        project.build("build", options = options) {
-            assertSuccessful()
+        if (!isFailed) {
+            bobGreet.modify { it.replace("Bob", "Uncle Bob") }
+            project.build("build", options = options) {
+                assertSuccessful()
 
-            if (withIC) {
-                assertCompiledKotlinSources(project.relativize(bobGreet))
+                if (withIC) {
+                    assertCompiledKotlinSources(project.relativize(bobGreet))
+                }
             }
         }
     }
