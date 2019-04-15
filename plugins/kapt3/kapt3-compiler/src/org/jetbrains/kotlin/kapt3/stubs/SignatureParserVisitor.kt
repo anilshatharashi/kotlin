@@ -103,7 +103,8 @@ class SignatureParser(private val treeMaker: KaptTreeMaker) {
         val typeParameters: JavacList<JCTypeParameter>,
         val parameterTypes: JavacList<JCVariableDecl>,
         val exceptionTypes: JavacList<JCExpression>,
-        val returnType: JCExpression?
+        val returnType: JCExpression?,
+        val semiRawReturnType: () -> JCExpression? = { returnType }
     )
 
     fun parseClassSignature(
@@ -160,7 +161,9 @@ class SignatureParser(private val treeMaker: KaptTreeMaker) {
         }
         val jcExceptionTypes = mapJList(exceptionTypes) { parseType(it) }
         val jcReturnType = if (rawReturnType == null) null else parseType(returnTypes.single().children.single())
-        return MethodGenericSignature(jcTypeParameters, jcParameters, jcExceptionTypes, jcReturnType)
+        return MethodGenericSignature(jcTypeParameters, jcParameters, jcExceptionTypes, jcReturnType) {
+            if (rawReturnType == null) null else parseType(returnTypes.single().children.single(), genericsDepth = 1)
+        }
     }
 
     fun parseFieldSignature(
@@ -195,7 +198,7 @@ class SignatureParser(private val treeMaker: KaptTreeMaker) {
         return parseType(node.children.single())
     }
 
-    private fun parseType(node: SignatureNode): JCExpression {
+    private fun parseType(node: SignatureNode, genericsDepth: Int = Int.MAX_VALUE): JCExpression {
         val kind = node.kind
         return when (kind) {
             ClassType -> {
@@ -203,13 +206,14 @@ class SignatureParser(private val treeMaker: KaptTreeMaker) {
                 val innerClasses = mutableListOf<SignatureNode>()
                 node.split(typeArgs, TypeArgument, innerClasses, InnerClass)
 
-                var expression = makeExpressionForClassTypeWithArguments(treeMaker.FqName(node.name!!), typeArgs)
+                var expression = makeExpressionForClassTypeWithArguments(treeMaker.FqName(node.name!!), typeArgs, genericsDepth)
                 if (innerClasses.isEmpty()) return expression
 
                 for (innerClass in innerClasses) {
                     expression = makeExpressionForClassTypeWithArguments(
                         treeMaker.Select(expression, treeMaker.name(innerClass.name!!)),
-                        innerClass.children
+                        innerClass.children,
+                        genericsDepth
                     )
                 }
 
@@ -236,14 +240,18 @@ class SignatureParser(private val treeMaker: KaptTreeMaker) {
         }
     }
 
-    private fun makeExpressionForClassTypeWithArguments(fqNameExpression: JCExpression, args: List<SignatureNode>): JCExpression {
-        if (args.isEmpty()) return fqNameExpression
+    private fun makeExpressionForClassTypeWithArguments(
+        fqNameExpression: JCExpression,
+        args: List<SignatureNode>,
+        genericsDepth: Int
+    ): JCExpression {
+        if (genericsDepth <= 0 || args.isEmpty()) return fqNameExpression
 
         return treeMaker.TypeApply(fqNameExpression, mapJList(args) { arg ->
             assert(arg.kind == TypeArgument) { "Unexpected kind ${arg.kind}, $TypeArgument expected" }
             val variance = arg.name ?: return@mapJList treeMaker.Wildcard(treeMaker.TypeBoundKind(BoundKind.UNBOUND), null)
 
-            val argType = parseType(arg.children.single())
+            val argType = parseType(arg.children.single(), genericsDepth - 1)
             when (variance.single()) {
                 '=' -> argType
                 '+' -> treeMaker.Wildcard(treeMaker.TypeBoundKind(BoundKind.EXTENDS), argType)

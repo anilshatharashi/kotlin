@@ -4,7 +4,7 @@ import java.lang.System;
 @java.lang.annotation.Retention(value = java.lang.annotation.RetentionPolicy.RUNTIME)
 public abstract @interface Anno {
 
-    public abstract java.lang.Class baseClass();
+    public abstract java.lang.Class<? extends Intf> baseClass();
 }
 
 ////////////////////

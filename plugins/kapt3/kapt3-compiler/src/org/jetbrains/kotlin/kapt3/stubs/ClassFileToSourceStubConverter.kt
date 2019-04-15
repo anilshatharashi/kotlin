@@ -837,7 +837,7 @@ class ClassFileToSourceStubConverter(val kaptContext: KaptContextForStubGenerati
                 if (descriptor is PropertyDescriptor) {
                     val containingClass = descriptor.containingDeclaration
                     if (containingClass is ClassDescriptor && containingClass.kind == ClassKind.ANNOTATION_CLASS) {
-                        return@ifNonError jcReturnType
+                        return@ifNonError genericSignature.semiRawReturnType()
                     }
                 }
                 genericSignature.returnType
