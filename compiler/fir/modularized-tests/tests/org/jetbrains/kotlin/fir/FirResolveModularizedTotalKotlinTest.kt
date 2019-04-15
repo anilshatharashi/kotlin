@@ -153,7 +153,7 @@ class FirResolveModularizedTotalKotlinTest : KtUsefulTestCase() {
 
 
     private fun runTestOnce(pass: Int) {
-        val testDataPath = "/Users/jetbrains/jps"
+        val testDataPath = "C:/jps_script"
         val root = File(testDataPath)
 
         println("BASE PATH: ${root.absolutePath}")
