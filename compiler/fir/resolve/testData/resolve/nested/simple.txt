@@ -30,7 +30,7 @@ FILE: simple.kt
             }
 
             public final fun err(): R|kotlin/Unit| {
-                R|/Owner.foo|()
+                <Inapplicable(WRONG_RECEIVER): [/Owner.foo]>#()
                 this#.<Unresolved name: foo>#()
             }
 

@@ -24,7 +24,7 @@ abstract class CheckerStage : ResolutionStage()
 
 internal object CheckExplicitReceiverConsistency : ResolutionStage() {
     override fun check(candidate: Candidate, sink: CheckerSink, callInfo: CallInfo) {
-        val receiverKind = candidate.receiverKind
+        val receiverKind = candidate.explicitReceiverKind
         val explicitReceiver = callInfo.explicitReceiver
         // TODO: add invoke cases
         when (receiverKind) {
@@ -53,10 +53,8 @@ internal sealed class CheckReceivers : ResolutionStage() {
             return this == DISPATCH_RECEIVER || this == BOTH_RECEIVERS
         }
 
-        override fun Candidate.getReceiverType(): ConeKotlinType? {
-            // TODO: it looks incorrect because it's just an explicit receiver in dispatch position,
-            // so can be applied only to call info, not candidate
-            return this.boundDispatchReceiver?.type
+        override fun Candidate.getReceiverValue(): ReceiverValue? {
+            return dispatchReceiverValue
         }
     }
 
@@ -69,34 +67,43 @@ internal sealed class CheckReceivers : ResolutionStage() {
             return this == EXTENSION_RECEIVER || this == BOTH_RECEIVERS
         }
 
-        override fun Candidate.getReceiverType(): ConeKotlinType? {
+        override fun Candidate.getReceiverValue(): ReceiverValue? {
             val callableSymbol = symbol as? FirCallableSymbol ?: return null
             val callable = callableSymbol.fir
-            return (callable.receiverTypeRef as FirResolvedTypeRef?)?.type
+            val type = (callable.receiverTypeRef as FirResolvedTypeRef?)?.type ?: return null
+            return object : ReceiverValue {
+                override val type: ConeKotlinType
+                    get() = type
+
+            }
         }
     }
 
-    abstract fun Candidate.getReceiverType(): ConeKotlinType?
+    abstract fun Candidate.getReceiverValue(): ReceiverValue?
 
     abstract fun ExplicitReceiverKind.shouldBeResolvedAsExplicit(): Boolean
 
     abstract fun ExplicitReceiverKind.shouldBeResolvedAsImplicit(): Boolean
 
     override fun check(candidate: Candidate, sink: CheckerSink, callInfo: CallInfo) {
-        val candidateReceiverType = candidate.getReceiverType()
+        val receiverParameterValue = candidate.getReceiverValue()
         val explicitReceiverExpression = callInfo.explicitReceiver
-        val explicitReceiverKind = candidate.receiverKind
+        val explicitReceiverKind = candidate.explicitReceiverKind
 
-        if (candidateReceiverType != null) {
+        if (receiverParameterValue != null) {
             if (explicitReceiverExpression != null && explicitReceiverKind.shouldBeResolvedAsExplicit()) {
                 resolveArgumentExpression(
-                    candidate.csBuilder, explicitReceiverExpression, candidateReceiverType,
+                    candidate.csBuilder, explicitReceiverExpression, receiverParameterValue.type,
                     sink, isReceiver = true, typeProvider = callInfo.typeProvider
                 )
             } else if (explicitReceiverExpression == null && explicitReceiverKind.shouldBeResolvedAsImplicit()) {
-//                resolvePlainArgumentType(
-//                    candidate.csBuilder, TODO(), candidateReceiverType, sink, isReceiver = true
-//                )
+                val implicitReceiverValues = callInfo.implicitReceiverValues
+                // TODO: this is very preliminary. We should take receiver value matching this candidate, not just the first one
+                val implicitReceiverValue = implicitReceiverValues.firstOrNull()
+                    ?: return sink.reportApplicability(CandidateApplicability.WRONG_RECEIVER)
+                resolvePlainArgumentType(
+                    candidate.csBuilder, implicitReceiverValue.type, receiverParameterValue.type, sink, isReceiver = true
+                )
             }
         }
     }

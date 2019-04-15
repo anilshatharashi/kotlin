@@ -29,10 +29,10 @@ class CandidateFactory(
 
     fun createCandidate(
         symbol: ConeSymbol,
-        boundDispatchReceiver: ReceiverValueWithPossibleTypes?,
+        dispatchReceiverValue: ClassDispatchReceiverValue?,
         explicitReceiverKind: ExplicitReceiverKind
     ): Candidate {
-        return Candidate(symbol, boundDispatchReceiver, explicitReceiverKind, inferenceComponents, baseSystem)
+        return Candidate(symbol, dispatchReceiverValue, explicitReceiverKind, inferenceComponents, baseSystem)
     }
 }
 

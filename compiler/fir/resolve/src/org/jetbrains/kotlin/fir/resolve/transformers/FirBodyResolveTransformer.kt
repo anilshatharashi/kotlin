@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.fir.scopes.impl.FirLocalScope
 import org.jetbrains.kotlin.fir.scopes.impl.FirTopLevelDeclaredMemberScope
 import org.jetbrains.kotlin.fir.scopes.impl.withReplacedConeType
 import org.jetbrains.kotlin.fir.symbols.*
+import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.fir.types.impl.*
 import org.jetbrains.kotlin.fir.visitors.CompositeTransformResult
@@ -76,11 +77,14 @@ open class FirBodyResolveTransformer(val session: FirSession, val implicitTypeOn
     }
 
 
-    private inline fun <T> withLabelAndReceiverType(labelName: Name, type: ConeKotlinType, block: () -> T): T {
+    private inline fun <T> withLabelAndReceiverType(owner: FirNamedDeclaration, type: ConeKotlinType, block: () -> T): T {
+        val labelName = owner.name
         labels.put(labelName, type)
-        // TODO: it's a bit more complex when related to classes
-        // E.g. we cannot access receiver of outer class from a nested class
-        implicitReceiverStack += type
+        when (owner) {
+            is FirRegularClass -> implicitReceiverStack += ImplicitDispatchReceiverValue(owner.symbol, type)
+            is FirNamedFunction -> implicitReceiverStack += ImplicitExtensionReceiverValue(owner.symbol as FirFunctionSymbol, type)
+            else -> throw IllegalArgumentException("Incorrect label & receiver owner: ${owner.javaClass}")
+        }
         val result = block()
         implicitReceiverStack.removeAt(implicitReceiverStack.size - 1)
         labels.remove(labelName, type)
@@ -91,7 +95,7 @@ open class FirBodyResolveTransformer(val session: FirSession, val implicitTypeOn
         return withScopeCleanup(scopes) {
             val type = regularClass.defaultType()
             scopes.addIfNotNull(type.scope(session))
-            withLabelAndReceiverType(regularClass.name, type) {
+            withLabelAndReceiverType(regularClass, type) {
                 super.transformRegularClass(regularClass, data)
             }
         }
@@ -141,7 +145,7 @@ open class FirBodyResolveTransformer(val session: FirSession, val implicitTypeOn
 
     private val labels = LinkedHashMultimap.create<Name, ConeKotlinType>()
 
-    private val implicitReceiverStack = mutableListOf<ConeKotlinType>()
+    private val implicitReceiverStack = mutableListOf<ImplicitReceiverValue>()
 
     private val jump = ReturnTypeCalculatorWithJump(session)
 
@@ -188,7 +192,8 @@ open class FirBodyResolveTransformer(val session: FirSession, val implicitTypeOn
 
         val receiver = qualifiedAccess.explicitReceiver?.transformSingle(this, null)
 
-        val info = CallInfo(CallKind.VariableAccess, receiver, emptyList(), emptyList()) { it.resultType }
+        val implicitReceiverValues = implicitReceiverStack.asReversed()
+        val info = CallInfo(CallKind.VariableAccess, receiver, implicitReceiverValues, emptyList(), emptyList()) { it.resultType }
         val resolver = CallResolver(jump, session)
         resolver.callInfo = info
         resolver.scopes = (scopes + localScopes).asReversed()
@@ -198,7 +203,7 @@ open class FirBodyResolveTransformer(val session: FirSession, val implicitTypeOn
             callee.name,
             info, inferenceComponents
         )
-        val result = resolver.runTowerResolver(consumer, implicitReceiverStack.asReversed())
+        val result = resolver.runTowerResolver(consumer, implicitReceiverValues)
 
         val nameReference = createResolvedNamedReference(
             callee,
@@ -254,18 +259,18 @@ open class FirBodyResolveTransformer(val session: FirSession, val implicitTypeOn
 
         val name = functionCall.calleeReference.name
 
-        val receiver = functionCall.explicitReceiver
+        val explicitReceiver = functionCall.explicitReceiver
         val arguments = functionCall.arguments
         val typeArguments = functionCall.typeArguments
 
-
-        val info = CallInfo(CallKind.Function, receiver, arguments, typeArguments) { it.resultType }
+        val implicitReceiverValues = implicitReceiverStack.asReversed()
+        val info = CallInfo(CallKind.Function, explicitReceiver, implicitReceiverValues, arguments, typeArguments) { it.resultType }
         val resolver = CallResolver(jump, session)
         resolver.callInfo = info
         resolver.scopes = (scopes + localScopes).asReversed()
 
         val consumer = createFunctionConsumer(session, name, info, inferenceComponents)
-        val result = resolver.runTowerResolver(consumer, implicitReceiverStack.asReversed())
+        val result = resolver.runTowerResolver(consumer, implicitReceiverValues)
         val bestCandidates = result.bestCandidates()
         val reducedCandidates = ConeOverloadConflictResolver(TypeSpecificityComparator.NONE, inferenceComponents)
             .chooseMaximallySpecificCandidates(bestCandidates, discriminateGenerics = false)
@@ -498,7 +503,7 @@ open class FirBodyResolveTransformer(val session: FirSession, val implicitTypeOn
         }
 
         return if (receiverTypeRef != null) {
-            withLabelAndReceiverType(namedFunction.name, receiverTypeRef.coneTypeUnsafe()) { transform() }
+            withLabelAndReceiverType(namedFunction, receiverTypeRef.coneTypeUnsafe()) { transform() }
         } else {
             transform()
         }
