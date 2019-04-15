@@ -6,9 +6,12 @@
 package org.jetbrains.kotlin.findUsages
 
 import org.jetbrains.kotlin.idea.multiplatform.setupMppProjectFromDirStructure
+import org.jetbrains.kotlin.test.JUnit3RunnerWithInners
 import org.junit.Test
+import org.junit.runner.RunWith
 import java.io.File
 
+@RunWith(JUnit3RunnerWithInners::class)
 class FindUsagesMultiModuleTest : AbstractFindUsagesMultiModuleTest() {
 
     @Test

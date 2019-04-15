@@ -8,8 +8,11 @@ package org.jetbrains.kotlin.idea.refactoring
 import com.intellij.lang.refactoring.NamesValidator
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 import org.jetbrains.kotlin.idea.refactoring.KotlinNamesValidator
+import org.jetbrains.kotlin.test.JUnit3RunnerWithInners
 import org.junit.Assert
+import org.junit.runner.RunWith
 
+@RunWith(JUnit3RunnerWithInners::class)
 class KotlinNamesValidatorTest : LightCodeInsightFixtureTestCase() {
     val validator: NamesValidator = KotlinNamesValidator()
 

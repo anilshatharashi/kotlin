@@ -17,8 +17,11 @@ import org.jetbrains.kotlin.idea.test.KotlinJdkAndLibraryProjectDescriptor
 import org.jetbrains.kotlin.idea.test.KotlinLightCodeInsightFixtureTestCase
 import org.jetbrains.kotlin.idea.test.PluginTestCaseBase
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.test.JUnit3RunnerWithInners
+import org.junit.runner.RunWith
 import java.io.File
 
+@RunWith(JUnit3RunnerWithInners::class)
 class NoErrorsInStdlibTest : KotlinLightCodeInsightFixtureTestCase() {
     fun testNoErrors() {
         val relativePathToProjectRoot = File(System.getProperty("user.dir")).relativeTo(File(myFixture.testDataPath)).path

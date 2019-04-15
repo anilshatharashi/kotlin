@@ -19,11 +19,14 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.resolve.jvm.platform.JvmPlatform
+import org.jetbrains.kotlin.test.JUnit3RunnerWithInners
 import org.jetbrains.kotlin.test.KotlinTestUtils
+import org.junit.runner.RunWith
 import java.io.File
 
 private val LIBRARY_SRC_PATH = KotlinTestUtils.getHomeDirectory() + "/idea/idea-completion/testData/codeFragmentInLibrarySource/customLibrary/"
 
+@RunWith(JUnit3RunnerWithInners::class)
 class CodeFragmentCompletionInLibraryTest : AbstractJvmBasicCompletionTest() {
 
     override fun getProjectDescriptor() = object: SdkAndMockLibraryProjectDescriptor(LIBRARY_SRC_PATH, false) {

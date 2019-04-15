@@ -11,7 +11,10 @@ import org.jetbrains.kotlin.idea.debugger.sequence.trace.dsl.KotlinSequenceTypes
 import org.jetbrains.kotlin.idea.debugger.sequence.trace.dsl.KotlinSequenceTypes.INT
 import org.jetbrains.kotlin.idea.debugger.sequence.trace.dsl.KotlinSequenceTypes.LONG
 import org.jetbrains.kotlin.idea.debugger.sequence.trace.dsl.KotlinSequenceTypes.NULLABLE_ANY
+import org.jetbrains.kotlin.test.JUnit3RunnerWithInners
+import org.junit.runner.RunWith
 
+@RunWith(JUnit3RunnerWithInners::class)
 class TypedJavaChainTest : TypedChainTestCase("streams/positive/types") {
     override val kotlinChainBuilder: StreamChainBuilder = JavaStandardLibrarySupportProvider().chainBuilder
 

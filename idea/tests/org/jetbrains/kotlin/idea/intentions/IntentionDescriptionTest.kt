@@ -11,8 +11,11 @@ import com.intellij.openapi.extensions.Extensions
 import com.intellij.testFramework.LightPlatformTestCase
 import com.intellij.testFramework.UsefulTestCase
 import org.jetbrains.kotlin.idea.KotlinPluginUtil
+import org.jetbrains.kotlin.test.JUnit3RunnerWithInners
+import org.junit.runner.RunWith
 import java.io.File
 
+@RunWith(JUnit3RunnerWithInners::class)
 class IntentionDescriptionTest : LightPlatformTestCase() {
 
     private val necessaryNormalNames = listOf("description.html", "before.kt.template", "after.kt.template")

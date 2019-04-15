@@ -10,7 +10,10 @@ import com.intellij.testFramework.LightProjectDescriptor
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 import org.jetbrains.kotlin.idea.KotlinFileType
 import org.jetbrains.kotlin.idea.test.KotlinLightCodeInsightFixtureTestCase
+import org.jetbrains.kotlin.test.JUnit3RunnerWithInners
+import org.junit.runner.RunWith
 
+@RunWith(JUnit3RunnerWithInners::class)
 class SmartEnterTest : KotlinLightCodeInsightFixtureTestCase() {
     fun testIfCondition() = doFunTest(
             """

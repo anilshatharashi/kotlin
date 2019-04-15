@@ -13,7 +13,10 @@ import com.intellij.testFramework.LightPlatformTestCase
 import org.jetbrains.kotlin.idea.KotlinFileType
 import org.jetbrains.kotlin.idea.formatter.KotlinStyleGuideCodeStyle
 import org.jetbrains.kotlin.idea.formatter.ktCodeStyleSettings
+import org.jetbrains.kotlin.test.JUnit3RunnerWithInners
+import org.junit.runner.RunWith
 
+@RunWith(JUnit3RunnerWithInners::class)
 class TypedHandlerTest : LightCodeInsightTestCase() {
     private val dollar = '$'
 

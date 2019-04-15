@@ -4,6 +4,10 @@
  */
 package org.jetbrains.kotlin.idea.debugger.sequence.psi.java
 
+import org.jetbrains.kotlin.test.JUnit3RunnerWithInners
+import org.junit.runner.RunWith
+
+@RunWith(JUnit3RunnerWithInners::class)
 class AmbiguousChainsTest : PositiveJavaStreamTest("ambiguous") {
     fun testSimpleExpression() = doTest(2)
 

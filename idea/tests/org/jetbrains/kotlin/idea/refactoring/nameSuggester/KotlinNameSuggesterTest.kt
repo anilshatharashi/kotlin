@@ -16,9 +16,12 @@ import org.jetbrains.kotlin.idea.test.PluginTestCaseBase
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
+import org.jetbrains.kotlin.test.JUnit3RunnerWithInners
 import org.jetbrains.kotlin.test.KotlinTestUtils
+import org.junit.runner.RunWith
 import java.lang.AssertionError
 
+@RunWith(JUnit3RunnerWithInners::class)
 class KotlinNameSuggesterTest : KotlinLightCodeInsightFixtureTestCase() {
     fun testArrayList() = doTest()
 

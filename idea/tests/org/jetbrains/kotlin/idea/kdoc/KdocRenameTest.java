@@ -13,7 +13,10 @@ import com.intellij.refactoring.rename.RenameProcessor;
 import com.intellij.testFramework.LightCodeInsightTestCase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.kotlin.idea.test.PluginTestCaseBase;
+import org.jetbrains.kotlin.test.JUnit3RunnerWithInners;
+import org.junit.runner.RunWith;
 
+@RunWith(JUnit3RunnerWithInners.class)
 public class KdocRenameTest extends LightCodeInsightTestCase {
     @NotNull
     @Override

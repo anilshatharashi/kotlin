@@ -8,7 +8,10 @@ package org.jetbrains.kotlin.psi
 import org.intellij.lang.annotations.Language
 import org.intellij.lang.regexp.RegExpLanguage
 import org.jetbrains.kotlin.idea.test.KotlinWithJdkAndRuntimeLightProjectDescriptor
+import org.jetbrains.kotlin.test.JUnit3RunnerWithInners
+import org.junit.runner.RunWith
 
+@RunWith(JUnit3RunnerWithInners::class)
 class KotlinStdlibInjectionTest : AbstractInjectionTest() {
     fun testOnRegex0() = assertInjectionPresent(
             """

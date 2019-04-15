@@ -17,7 +17,10 @@ import com.intellij.testFramework.LightPlatformTestCase
 import com.intellij.testFramework.UsefulTestCase
 import gnu.trove.THashMap
 import org.jetbrains.kotlin.idea.KotlinPluginUtil
+import org.jetbrains.kotlin.test.JUnit3RunnerWithInners
+import org.junit.runner.RunWith
 
+@RunWith(JUnit3RunnerWithInners::class)
 class InspectionDescriptionTest : LightPlatformTestCase() {
 
     fun testDescriptionsAndShortNames() {

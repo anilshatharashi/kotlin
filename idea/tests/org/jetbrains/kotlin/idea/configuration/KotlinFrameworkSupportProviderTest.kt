@@ -14,7 +14,10 @@ import org.jetbrains.kotlin.config.apiVersionView
 import org.jetbrains.kotlin.config.languageVersionView
 import org.jetbrains.kotlin.idea.compiler.configuration.KotlinCommonCompilerArgumentsHolder
 import org.jetbrains.kotlin.idea.framework.JavaFrameworkSupportProvider
+import org.jetbrains.kotlin.test.JUnit3RunnerWithInners
+import org.junit.runner.RunWith
 
+@RunWith(JUnit3RunnerWithInners::class)
 class KotlinFrameworkSupportProviderTest : FrameworkSupportProviderTestCase() {
     private fun doTest(provider: FrameworkSupportInModuleProvider) {
         selectFramework(provider).createLibraryDescription()

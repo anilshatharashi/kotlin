@@ -7,9 +7,11 @@ package org.jetbrains.kotlin.idea.framework.ui;
 
 import com.intellij.testFramework.LightIdeaTestCase;
 import com.intellij.util.text.VersionComparatorUtil;
+import org.jetbrains.kotlin.test.JUnit3RunnerWithInners;
+import org.junit.runner.RunWith;
 
 import java.util.Collection;
-
+@RunWith(JUnit3RunnerWithInners.class)
 public class LoadVersionsFromMavenTest extends LightIdeaTestCase {
     public void testDownload() throws Exception {
         Collection<String> versions = ConfigureDialogWithModulesAndVersion.loadVersions("1.0.0");

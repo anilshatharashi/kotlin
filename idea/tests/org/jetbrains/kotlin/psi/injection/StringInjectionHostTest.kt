@@ -9,10 +9,13 @@ import com.intellij.openapi.util.TextRange
 import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 import org.jetbrains.kotlin.test.ConfigurationKind
+import org.jetbrains.kotlin.test.JUnit3RunnerWithInners
 import org.jetbrains.kotlin.test.KotlinTestWithEnvironment
 import org.jetbrains.kotlin.utils.keysToMap
+import org.junit.runner.RunWith
 import java.util.*
 
+@RunWith(JUnit3RunnerWithInners::class)
 class StringInjectionHostTest : KotlinTestWithEnvironment() {
     fun testRegular() {
         with (quoted("")) {

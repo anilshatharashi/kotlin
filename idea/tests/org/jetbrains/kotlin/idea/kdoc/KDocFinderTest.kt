@@ -12,8 +12,11 @@ import org.jetbrains.kotlin.idea.test.PluginTestCaseBase
 import org.jetbrains.kotlin.incremental.components.NoLookupLocation
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.test.JUnit3RunnerWithInners
 import org.junit.Assert
+import org.junit.runner.RunWith
 
+@RunWith(JUnit3RunnerWithInners::class)
 class KDocFinderTest() : LightPlatformCodeInsightFixtureTestCase() {
     override fun getTestDataPath(): String {
         return PluginTestCaseBase.getTestDataPathBase() + "/kdoc/finder/"

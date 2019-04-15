@@ -17,8 +17,11 @@ import org.jetbrains.kotlin.psi.KtDeclaration
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
+import org.jetbrains.kotlin.test.JUnit3RunnerWithInners
 import org.junit.Assert
+import org.junit.runner.RunWith
 
+@RunWith(JUnit3RunnerWithInners::class)
 class QuickDocNavigationTest() : KotlinLightCodeInsightFixtureTestCase() {
     override fun getTestDataPath(): String {
         return PluginTestCaseBase.getTestDataPathBase() + "/kdoc/navigate/"

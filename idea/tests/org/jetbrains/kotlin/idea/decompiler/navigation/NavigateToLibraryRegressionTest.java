@@ -17,7 +17,10 @@ import org.jetbrains.kotlin.idea.KotlinFileType;
 import org.jetbrains.kotlin.idea.KotlinLanguage;
 import org.jetbrains.kotlin.idea.test.KotlinWithJdkAndRuntimeLightProjectDescriptor;
 import org.jetbrains.kotlin.idea.test.TestUtilsKt;
+import org.jetbrains.kotlin.test.JUnit3RunnerWithInners;
+import org.junit.runner.RunWith;
 
+@RunWith(JUnit3RunnerWithInners.class)
 public class NavigateToLibraryRegressionTest extends LightCodeInsightFixtureTestCase {
 
     @Override

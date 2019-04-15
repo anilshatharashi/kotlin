@@ -6,7 +6,10 @@
 package org.jetbrains.kotlin.idea.highlighter
 
 import com.intellij.testFramework.LexerTestCase
+import org.jetbrains.kotlin.test.JUnit3RunnerWithInners
+import org.junit.runner.RunWith
 
+@RunWith(JUnit3RunnerWithInners::class)
 class KotlinHighlightingLexerTest : LexerTestCase() {
     override fun createLexer() = KotlinHighlightingLexer()
 

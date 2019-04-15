@@ -10,8 +10,10 @@ import com.intellij.openapi.application.ApplicationManager
 import org.jetbrains.kotlin.idea.core.script.isScriptDependenciesUpdaterDisabled
 import org.jetbrains.kotlin.idea.test.KotlinLightJava9ModulesCodeInsightFixtureTestCase
 import org.jetbrains.kotlin.idea.test.KotlinMultiModuleJava9ProjectDescriptor.ModuleDescriptor.*
+import org.jetbrains.kotlin.test.JUnit3RunnerWithInners
+import org.junit.runner.RunWith
 
-
+@RunWith(JUnit3RunnerWithInners::class)
 class KotlinAddRequiredModuleTest : KotlinLightJava9ModulesCodeInsightFixtureTestCase() {
     private val messageM2 = QuickFixBundle.message("module.info.add.requires.name", "M_TWO")!!
 
