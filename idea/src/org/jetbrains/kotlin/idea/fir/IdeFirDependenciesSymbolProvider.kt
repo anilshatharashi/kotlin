@@ -105,8 +105,6 @@ class IdeFirDependenciesSymbolProvider(
 
     override fun getClassDeclaredMemberScope(classId: ClassId): FirScope? = null
 
-    override fun getClassDeclaredMemberScope(classId: ClassId): FirScope? = null
-
     override fun getPackage(fqName: FqName): FqName? {
 
         if (PackageIndexUtil.packageExists(fqName, depScope, project)) {
