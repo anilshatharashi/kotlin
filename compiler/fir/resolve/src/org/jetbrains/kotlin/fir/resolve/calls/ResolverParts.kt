@@ -85,6 +85,29 @@ internal sealed class CheckReceivers : ResolutionStage() {
 
     abstract fun ExplicitReceiverKind.shouldBeResolvedAsImplicit(): Boolean
 
+    private fun List<ImplicitReceiverValue>.findMatchingImplicitReceiverValue(
+        receiverParameterValue: ReceiverValue
+    ): ImplicitReceiverValue? {
+        if (receiverParameterValue is ClassDispatchReceiverValue) {
+            val candidateClassSymbol = receiverParameterValue.klassSymbol
+            var takeDispatchReceivers = true
+            for (implicitReceiverValue in this) {
+                if (implicitReceiverValue is ImplicitDispatchReceiverValue) {
+                    if (!takeDispatchReceivers) continue
+                    val implicitReceiverBoundClassSymbol = implicitReceiverValue.boundSymbol
+                    if (!implicitReceiverBoundClassSymbol.fir.isInner) {
+                        takeDispatchReceivers = false
+                    }
+                    if (implicitReceiverBoundClassSymbol == candidateClassSymbol) {
+                        return implicitReceiverValue
+                    }
+                }
+            }
+        }
+        // TODO: temporary
+        return firstOrNull()
+    }
+
     override fun check(candidate: Candidate, sink: CheckerSink, callInfo: CallInfo) {
         val receiverParameterValue = candidate.getReceiverValue()
         val explicitReceiverExpression = callInfo.explicitReceiver
@@ -98,8 +121,9 @@ internal sealed class CheckReceivers : ResolutionStage() {
                 )
             } else if (explicitReceiverExpression == null && explicitReceiverKind.shouldBeResolvedAsImplicit()) {
                 val implicitReceiverValues = callInfo.implicitReceiverValues
+
                 // TODO: this is very preliminary. We should take receiver value matching this candidate, not just the first one
-                val implicitReceiverValue = implicitReceiverValues.firstOrNull()
+                val implicitReceiverValue = implicitReceiverValues.findMatchingImplicitReceiverValue(receiverParameterValue)
                     ?: return sink.reportApplicability(CandidateApplicability.WRONG_RECEIVER)
                 resolvePlainArgumentType(
                     candidate.csBuilder, implicitReceiverValue.type, receiverParameterValue.type, sink, isReceiver = true
